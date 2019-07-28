@@ -1,6 +1,14 @@
-# Create a REST API : Project Setup with Express
+# Create a REST API 
 
-In this tutorial we will create a new NodeJS project with express, body-parser and nodemon and get our server.js file ready to build a REST API. This is part 1 of a series of tutorials on building a REST API in Node with express and PostgreSQL.
+In this tutorial we will create a new NodeJS project with express, body-parser and nodemon and get our server.js file ready to build a REST API.
+
+## Required
+
+Before installing, download and install Node.js. Node.js 0.10 or higher is required.
+
+# Part 1 : project Setup with Express
+
+ This is part 1 of a series of tutorials on building a REST API in Node with express and PostgreSQL.
 
 Part 1 - Project Setup with Express
 Part 2 - PostgreSQL with KnexJS Setup
@@ -8,9 +16,7 @@ Part 3 - User Registration and Validation
 Part 4 - Send Emails with Amazon SES
 Part 5 - Verify Users with Tokens
 
-## Required
 
-Before installing, download and install Node.js. Node.js 0.10 or higher is required.
 
 ## Project Setup
 1. Create a new node project
@@ -140,3 +146,95 @@ With your server running, open up a web browser and go to `localhost:3000/v1/use
 ## 8. Testing with Postman
 
 Before we move on to part 2 of this series, it might be useful to download and install the Postman App. Once you have postman open, select the GET method, type in `localhost:3000/v1/users/` in the address bar and click 'Send'. You should see the same “Hello World” message as you did in your browser.
+
+# Part 2 : postgreSQL with KnexJS Setup
+
+To continue with this tutorial you are going to need to be a little comfortable with Postgres and have it installed and running. You should also be comfortable using the psql command line tool or pgAdmin. Let's continue!
+
+## 1. More packages to install
+For this tutorial we are going to need a few more packages:
+
+• ***bcryptjs*** - A JavaScript module created for password hashing based on the bcrypt function. bcrypt website.
+
+• ***validator*** - Checks strings for a list of criteria (called validators) and removes unauthorized characters from strings. validator website.
+
+• ***knex.js*** - Knex.js is used here to enable queries to a PostgreSQL database from NodeJS. KnexJS website.
+
+• ***pg*** - This module is required by knex.js for PostgreSQL. pg website.
+
+Use the following command to install them:
+
+```
+npm i knex pg bcryptjs validator
+```
+## 2. Create database schema file
+
+We are going to create a schema file for our database called `simple_api`. In Postgres there are a couple of ways to setup a database but by using a file, you type out your schema once and run the file every time you need to rebuild your database. And you are likely to need to do this often when in development.
+
+Create a file in your project's root directory called `simple_api.sql` and enter the following:
+```
+DROP DATABASE IF EXISTS simple_api;
+CREATE DATABASE simple_api;
+
+\c simple_api;
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE users (
+  id uuid UNIQUE DEFAULT uuid_generate_v4 (),
+  email VARCHAR(128) NOT NULL UNIQUE,
+  password VARCHAR(128) NOT NULL,
+  registered BIGINT,
+  token VARCHAR(128) UNIQUE,
+  createdtime BIGINT,
+  emailVerified BOOLEAN,
+  tokenusedbefore BOOLEAN,
+  PRIMARY KEY (email)
+);
+```
+## 3. Database setup with our schema file
+
+Let's run our new schema file and watch our database get magically setup for us. In your command line, enter the psql shell:
+```
+psql
+```
+
+and enter in the following command to run your simple_api.sql file.
+```
+postgres=# \i C:/Users/Priyanka/tutorials/simple-api/simple_api.sql
+```
+Replace `C:/Users/Priyanka/tutorials/simple-api/simple_api.sql` with the path to the file on your hard drive.
+
+You should see the following if it worked:
+
+```
+postgres=# \i C:/Users/Priyanka/tutorials/simple-api/simple_api.sql
+DROP DATABASE
+CREATE DATABASE
+You are now connected to database "simple_api" as user "postgres".
+CREATE EXTENSION
+CREATE TABLE
+```
+## 4. Visualize the database with Azure Data Studio or with pgAdmin
+
+Just to confirm that the database was created properly, use Azure Data Studio or use pgAdmin to see the database visually
+
+
+## 5. Database connection file with KnexJS
+The last step in this part of the series is to create a database connection file that we can reuse throughout or project to connect to our database. Create a file called `database.js` in your project's root directory and add the following code:
+```
+const knex = require("knex");
+
+const database = knex({
+  client: "pg", // pg is the database library for postgreSQL on knexjs
+  connection: {
+    host: "127.0.0.1", // Your local host IP
+    user: "postgres", // Your postgres user name
+    password: "your_password", // Your postrgres user password
+    database: "simple_api" // Your database name
+  }
+});
+
+module.exports = database;
+```
+It's as simple as that. Every time you need a connection to your database you can import this file
