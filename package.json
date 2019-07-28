@@ -1,0 +1,23 @@
+{
+  "name": "api_rest",
+  "version": "1.0.0",
+  "description": "building a rest api in node with express and postgresql",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cultureweb/Building_a_REST_API_in_Node_with_express_and_PostgreSQL.git"
+  },
+  "author": "Cedric Milius",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cultureweb/Building_a_REST_API_in_Node_with_express_and_PostgreSQL/issues"
+  },
+  "homepage": "https://github.com/cultureweb/Building_a_REST_API_in_Node_with_express_and_PostgreSQL#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1"
+  }
+}
